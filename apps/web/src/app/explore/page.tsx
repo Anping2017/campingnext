@@ -246,19 +246,19 @@ export default function ExplorePage() {
 
         {/* 筛选区域 */}
         <div className="mb-6 space-y-4">
-          {/* 快捷筛选 */}
+        {/* 快捷筛选 */}
           <div>
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-medium text-gray-700">快捷筛选</span>
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm font-medium text-gray-700">快捷筛选</span>
               <div className="flex items-center gap-2">
                 {hasActiveFilters && (
-                  <button
-                    onClick={handleClearFilters}
-                    className="text-sm text-green-600 hover:text-green-700"
-                  >
-                    清除筛选
-                  </button>
-                )}
+              <button
+                onClick={handleClearFilters}
+                className="text-sm text-green-600 hover:text-green-700"
+              >
+                清除筛选
+              </button>
+            )}
                 <button
                   onClick={() => setShowPreferencesModal(true)}
                   className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
@@ -274,13 +274,13 @@ export default function ExplorePage() {
                   {showAdvancedFilters ? '收起' : '高级筛选'}
                 </button>
               </div>
-            </div>
-            <FilterChips
-              filters={availableFilters}
-              selectedFilters={selectedFilters}
-              onToggle={handleToggleFilter}
-            />
           </div>
+          <FilterChips
+            filters={availableFilters}
+            selectedFilters={selectedFilters}
+            onToggle={handleToggleFilter}
+          />
+        </div>
 
           {/* 高级筛选（折叠） */}
           {showAdvancedFilters && (

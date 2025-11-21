@@ -283,7 +283,7 @@ export default function TripForm({ onSubmit, loading, initialData }: TripFormPro
 
           {/* 目的地（可选，旅行起点）- 简化显示 */}
           {showDestination && (
-            <div>
+          <div>
               <label className="block text-sm text-gray-600 mb-2">
                 目的地（可选） <span className="text-gray-400 text-xs">（旅行起点，要去的地方）</span>
               </label>
@@ -314,14 +314,14 @@ export default function TripForm({ onSubmit, loading, initialData }: TripFormPro
             </div>
           )}
           {!showDestination && (
-            <button
-              type="button"
+                  <button
+                    type="button"
               onClick={() => setShowDestination(true)}
               className="w-full text-left p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors text-sm text-gray-600 flex items-center gap-2"
-            >
+                  >
               <Navigation className="w-4 h-4" />
               <span>添加目的地（可选）</span>
-            </button>
+                  </button>
           )}
 
           {/* 营地数量和出行天数 - 使用数字输入器 */}

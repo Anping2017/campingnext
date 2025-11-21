@@ -99,11 +99,11 @@ export default function TripPage() {
           selectedCamps: formData.selectedCamps,
         }),
       });
-
+      
       if (!response.ok) {
         throw new Error('生成行程失败');
       }
-
+      
       const tripData = await response.json();
       
       // 创建行程对象
@@ -115,7 +115,7 @@ export default function TripPage() {
         dailyPlans: tripData.dailyPlans || [],
         createdAt: new Date().toISOString(),
       };
-
+      
       setCurrentTrip(newTrip);
 
       // 保存到 localStorage
@@ -132,24 +132,24 @@ export default function TripPage() {
 
   const handleSaveTrip = () => {
     if (!currentTrip) return;
-
+      
     const updatedTrips = savedTrips.some((t) => t.id === currentTrip.id)
       ? savedTrips.map((t) => (t.id === currentTrip.id ? currentTrip : t))
       : [currentTrip, ...savedTrips];
-
-    setSavedTrips(updatedTrips);
-    localStorage.setItem('savedTrips', JSON.stringify(updatedTrips));
-    
+      
+      setSavedTrips(updatedTrips);
+      localStorage.setItem('savedTrips', JSON.stringify(updatedTrips));
+      
     // 触发 storage 事件，通知其他页面
     window.dispatchEvent(new Event('storage'));
-    
-    alert('行程已保存');
+      
+      alert('行程已保存');
     setIsEditing(false);
   };
 
   const handleDeleteTrip = () => {
     if (!currentTrip) return;
-    
+      
     if (!confirm('确定要删除这个行程吗？')) {
       return;
     }
@@ -190,11 +190,11 @@ export default function TripPage() {
                 <div className="flex gap-2">
                   {isEditing ? (
                     <>
-                      <button
-                        onClick={() => {
+                  <button
+                    onClick={() => {
                           setIsEditing(false);
                           loadTrips(); // 重新加载，取消编辑
-                        }}
+                    }}
                         className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
                       >
                         取消编辑
@@ -219,19 +219,19 @@ export default function TripPage() {
                         className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
                       >
                         新建行程
-                      </button>
-                      <button
+                  </button>
+                  <button
                         onClick={() => setIsEditing(true)}
                         className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
-                      >
+                  >
                         编辑行程
-                      </button>
-                      <button
+                  </button>
+                  <button
                         onClick={handleSaveTrip}
                         className="px-4 py-2 text-sm bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
-                      >
+                  >
                         保存行程
-                      </button>
+                  </button>
                     </>
                   )}
                 </div>
@@ -262,22 +262,22 @@ export default function TripPage() {
                   <div className="font-semibold">{currentTrip.dailyPlans.length} 个</div>
                 </div>
               </div>
-            </div>
+              </div>
 
-            {/* 每日行程 */}
-            <div className="space-y-6">
+              {/* 每日行程 */}
+                <div className="space-y-6">
               {currentTrip.dailyPlans.map((dailyPlan, index) => (
-                <TripCard
+                    <TripCard
                   key={dailyPlan.camp.id}
-                  camp={dailyPlan.camp}
-                  day={dailyPlan.day}
-                  drivingTime={dailyPlan.drivingTime}
-                  timeline={dailyPlan.timeline}
-                  weather={dailyPlan.weather}
+                      camp={dailyPlan.camp}
+                      day={dailyPlan.day}
+                      drivingTime={dailyPlan.drivingTime}
+                      timeline={dailyPlan.timeline}
+                      weather={dailyPlan.weather}
                   notes={dailyPlan.notes || []}
-                />
-              ))}
-            </div>
+                    />
+                  ))}
+                </div>
 
             {/* 编辑模式提示 */}
             {isEditing && (
@@ -285,8 +285,8 @@ export default function TripPage() {
                 <p className="text-sm text-blue-800">
                   💡 编辑模式：修改行程后点击&ldquo;保存修改&rdquo;按钮保存更改
                 </p>
-              </div>
-            )}
+                </div>
+              )}
           </div>
         ) : (
           <TripForm onSubmit={handleGenerateTrip} loading={loading} />
@@ -312,7 +312,7 @@ export default function TripPage() {
                         <Route className="w-5 h-5 text-green-600" />
                         <h3 className="text-lg font-semibold text-gray-900">
                           {trip.days} 天露营行程
-                        </h3>
+                      </h3>
                       </div>
                       <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
                         <div className="flex items-center gap-1">

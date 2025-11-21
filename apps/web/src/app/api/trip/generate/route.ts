@@ -535,7 +535,7 @@ ${isSingleCamp ? `请推荐 1 个最适合待 ${days} 天的营地，并生成�
 第${day}天行程信息：
 - 营地: ${dailyPlan.camp.name}
 - 地区: ${dailyPlan.camp.region}
-- 时间线: ${dailyPlan.timeline.map(t => `${t.time} ${t.event}`).join('，')}
+- 时间线: ${dailyPlan.timeline.map((t: { time: string; event: string }) => `${t.time} ${t.event}`).join('，')}
 - 天气: ${dailyPlan.weather.condition} ${dailyPlan.weather.temperature}
 ${dailyPlan.weather.nightTemperature ? `- 夜间温度: ${dailyPlan.weather.nightTemperature}` : ''}
 ${dailyPlan.drivingTime && dailyPlan.drivingTime !== '无需驾驶' ? `- 驾驶时间: ${dailyPlan.drivingTime}` : ''}
