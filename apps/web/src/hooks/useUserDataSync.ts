@@ -17,6 +17,8 @@ export function useUserDataSync() {
     if (typeof window === 'undefined') return;
     
     if (!user || !session || !isConfigured || hasSynced) return;
+    
+    // eslint-disable-next-line react-hooks/exhaustive-deps
 
     const syncData = async () => {
       try {
@@ -89,6 +91,7 @@ export function useUserDataSync() {
     // 延迟一点再同步，确保用户已完全登录
     const timer = setTimeout(syncData, 1000);
     return () => clearTimeout(timer);
-  }, [user, session, isConfigured]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, session, isConfigured, hasSynced]);
 }
 
