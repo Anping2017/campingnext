@@ -1,3 +1,5 @@
+const path = require('path');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -11,6 +13,14 @@ const nextConfig = {
   images: {
     domains: ['images.unsplash.com'],
     formats: ['image/avif', 'image/webp'],
+  },
+  // 确保 webpack 正确解析路径别名
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': path.resolve(__dirname, './src'),
+    };
+    return config;
   },
 }
 
