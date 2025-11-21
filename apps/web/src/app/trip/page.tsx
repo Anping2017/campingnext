@@ -55,7 +55,7 @@ export default function TripPage() {
         
         // 如果有 tripId，加载对应的行程
         if (tripId) {
-          const trip = trips.find((t) => t.id === tripId);
+          const trip = trips.find((t: TripPlan) => t.id === tripId);
           if (trip) {
             setCurrentTrip(trip);
             setIsEditing(isEdit);

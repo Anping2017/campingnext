@@ -17,8 +17,8 @@ import campsData from '@/data/camps.json';
 
 // 模拟数据
 const mockFavoriteCamps: Camp[] = [
-  campsData.find((c) => c.id === 'cathedral-cove') as Camp,
-  campsData.find((c) => c.id === 'lake-tekapo') as Camp,
+  (campsData as Camp[]).find((c: Camp) => c.id === 'cathedral-cove') as Camp,
+  (campsData as Camp[]).find((c: Camp) => c.id === 'lake-tekapo') as Camp,
 ].filter(Boolean);
 
 const mockMyPosts: Post[] = [

@@ -90,8 +90,8 @@ export default function TripForm({ onSubmit, loading, initialData }: TripFormPro
 
   // 获取已选择营地的详细信息
   const selectedCamps = selectedCampIds
-    .map((id) => (campsData as Camp[]).find((c) => c.id === id))
-    .filter((c): c is Camp => c !== undefined);
+    .map((id) => (campsData as Camp[]).find((c: Camp) => c.id === id))
+    .filter((c: Camp | undefined): c is Camp => c !== undefined);
 
   const handleRemoveCamp = (campId: string) => {
     const updated = selectedCampIds.filter((id) => id !== campId);

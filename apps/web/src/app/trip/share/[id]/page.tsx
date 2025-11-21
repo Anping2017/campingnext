@@ -52,7 +52,7 @@ export default function ShareTripPage() {
         const savedTrips = localStorage.getItem('savedTrips');
         if (savedTrips) {
           const trips: TripPlan[] = JSON.parse(savedTrips);
-          const trip = trips.find((t) => t.id === tripId);
+          const trip = trips.find((t: TripPlan) => t.id === tripId);
           if (trip) {
             setTripPlan(trip);
           } else {

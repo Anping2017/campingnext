@@ -132,7 +132,7 @@ export default function CreatePostModal({
                 <span className="flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-gray-400" />
                   {selectedCampId
-                    ? (campsData as Camp[]).find((c) => c.id === selectedCampId)?.name
+                    ? (campsData as Camp[]).find((c: Camp) => c.id === selectedCampId)?.name
                     : '选择营地'}
                 </span>
               </button>

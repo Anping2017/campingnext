@@ -260,7 +260,7 @@ export async function POST(request: NextRequest) {
 
     // 如果指定了营地ID，直接使用（优先）
     if (campId) {
-      const camp = allCamps.find((c) => c.id === campId);
+      const camp = allCamps.find((c: Camp) => c.id === campId);
       if (camp) {
         selectedCamps = [camp];
       }
@@ -311,7 +311,7 @@ ${destination ? `- 目的地: ${destination}` : ''}
 - 行程类型: ${isSingleCamp ? '单个营地多天' : '多个营地'}
 - 偏好: ${preferences.join('、')}
 ${priorityCampIds.length > 0 ? `- 用户已选择的营地（请优先考虑）: ${priorityCampIds.map((id) => {
-  const camp = allCamps.find((c) => c.id === id);
+  const camp = allCamps.find((c: Camp) => c.id === id);
   return camp ? `${camp.name} (${id})` : id;
 }).join('、')}` : ''}
 ${selectedCamps.length > 0 ? `- 已确定的营地: ${selectedCamps.map((c) => c.name).join('、')}` : ''}
@@ -349,8 +349,8 @@ ${isSingleCamp ? `请推荐 1 个最适合待 ${days} 天的营地，并生成�
       if (recommendedCampIds.length === 0) {
         // 优先考虑已选择的营地
         const priorityCamps = priorityCampIds
-          .map((id) => allCamps.find((c) => c.id === id))
-          .filter((c): c is Camp => c !== undefined);
+          .map((id) => allCamps.find((c: Camp) => c.id === id))
+          .filter((c: Camp | undefined): c is Camp => c !== undefined);
 
         // 然后根据偏好和目的地筛选其他营地
         const filteredCamps = allCamps
@@ -398,7 +398,7 @@ ${isSingleCamp ? `请推荐 1 个最适合待 ${days} 天的营地，并生成�
       // 如果还有已选择的营地未添加，优先添加
       if (priorityCampIds.length > 0) {
         priorityCampIds.forEach((id) => {
-          const camp = allCamps.find((c) => c.id === id);
+          const camp = allCamps.find((c: Camp) => c.id === id);
           if (camp && !finalCamps.some((c) => c.id === camp.id) && finalCamps.length < days) {
             finalCamps.push(camp);
           }

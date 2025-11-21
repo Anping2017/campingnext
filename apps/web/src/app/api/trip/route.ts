@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const camp = (campsData as Camp[]).find((c) => c.id === campId);
+    const camp = (campsData as Camp[]).find((c: Camp) => c.id === campId);
     if (!camp) {
       return NextResponse.json(
         { error: '找不到该营地' },

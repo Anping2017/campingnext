@@ -88,7 +88,7 @@ export default function CampDetailPage() {
           }
         } else {
           // API 失败时，使用 JSON 数据作为后备
-          const foundCamp = (campsData as Camp[]).find((c) => c.id === campId);
+          const foundCamp = (campsData as Camp[]).find((c: Camp) => c.id === campId);
           setCamp(foundCamp || null);
           
           const favorites = localStorage.getItem('favoriteCamps');
@@ -100,7 +100,7 @@ export default function CampDetailPage() {
       } catch (error) {
         console.error('加载营地失败:', error);
         // 使用 JSON 数据作为后备
-        const foundCamp = (campsData as Camp[]).find((c) => c.id === campId);
+        const foundCamp = (campsData as Camp[]).find((c: Camp) => c.id === campId);
         setCamp(foundCamp || null);
       } finally {
         setLoading(false);
