@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { preferencesUtils } from '@/types/preferences';
 import { onboardingUtils } from '@/components/OnboardingModal';
@@ -9,17 +9,18 @@ import { createClientComponentClient } from '@/lib/supabase';
 // 自动同步用户数据到 Supabase
 export function useUserDataSync() {
   const { user, session, isConfigured } = useAuth();
-  const hasSyncedRef = useRef(false);
+  // 使用 useState 而不是 useRef，避免 SSR 问题
+  const [hasSynced, setHasSynced] = useState(false);
 
   useEffect(() => {
     // 只在客户端执行
     if (typeof window === 'undefined') return;
     
-    if (!user || !session || !isConfigured || hasSyncedRef.current) return;
+    if (!user || !session || !isConfigured || hasSynced) return;
 
     const syncData = async () => {
       try {
-        hasSyncedRef.current = true;
+        setHasSynced(true);
 
         // 获取 access token
         const accessToken = session.access_token;
@@ -81,7 +82,7 @@ export function useUserDataSync() {
         console.log('用户数据同步完成');
       } catch (error) {
         console.error('同步用户数据失败:', error);
-        hasSyncedRef.current = false; // 失败后允许重试
+        setHasSynced(false); // 失败后允许重试
       }
     };
 
