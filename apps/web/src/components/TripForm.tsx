@@ -79,8 +79,8 @@ export default function TripForm({ onSubmit, loading, initialData }: TripFormPro
       try {
         const favoriteIds = JSON.parse(favorites);
         const camps = favoriteIds
-          .map((id: string) => (campsData as Camp[]).find((c) => c.id === id))
-          .filter((c): c is Camp => c !== undefined);
+          .map((id: string) => (campsData as Camp[]).find((c: Camp) => c.id === id))
+          .filter((c: Camp | undefined): c is Camp => c !== undefined);
         setFavoriteCamps(camps);
       } catch (error) {
         console.error('加载收藏营地失败:', error);
