@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import TripForm, { TripFormData } from '@/components/TripForm';
 import TripCard from '@/components/TripCard';
@@ -46,7 +46,7 @@ export default function TripPage() {
   const [isEditing, setIsEditing] = useState(false);
 
   // 加载已保存的行程
-  const loadTrips = () => {
+  const loadTrips = useCallback(() => {
     const saved = localStorage.getItem('savedTrips');
     if (saved) {
       try {
@@ -65,11 +65,11 @@ export default function TripPage() {
         console.error('加载已保存行程失败:', error);
       }
     }
-  };
+  }, [tripId, isEdit]);
 
   useEffect(() => {
     loadTrips();
-  }, [tripId, isEdit]);
+  }, [loadTrips]);
 
   // 监听 localStorage 变化（用于跨页面同步）
   useEffect(() => {
@@ -80,7 +80,7 @@ export default function TripPage() {
     };
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
+  }, [loadTrips]);
 
   const handleGenerateTrip = async (formData: TripFormData) => {
     setLoading(true);
@@ -283,7 +283,7 @@ export default function TripPage() {
             {isEditing && (
               <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
                 <p className="text-sm text-blue-800">
-                  💡 编辑模式：修改行程后点击"保存修改"按钮保存更改
+                  💡 编辑模式：修改行程后点击&ldquo;保存修改&rdquo;按钮保存更改
                 </p>
               </div>
             )}

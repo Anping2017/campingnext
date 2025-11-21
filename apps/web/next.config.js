@@ -1,5 +1,7 @@
 const path = require('path');
 
+const path = require('path');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -21,6 +23,10 @@ const nextConfig = {
       '@': path.resolve(__dirname, './src'),
     };
     return config;
+  },
+  // 在构建时忽略 ESLint 警告（只显示错误）
+  eslint: {
+    ignoreDuringBuilds: false, // 不忽略，但可以配置规则
   },
 }
 

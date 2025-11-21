@@ -58,6 +58,7 @@ export default function TripForm({ onSubmit, loading, initialData }: TripFormPro
     if (prefs.personalInfo.hasChildren && !preferences.includes('family')) {
       setPreferences((prev) => [...prev, 'family']);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // 从 localStorage 加载已选择的营地和收藏的营地

@@ -203,7 +203,7 @@ export default function ExplorePage() {
     }
 
     return result;
-  }, [searchQuery, selectedFilters, selectedDifficulty, selectedRegions, selectedCampTypes, priceRange, userPreferences]);
+  }, [searchQuery, selectedFilters, selectedDifficulty, selectedRegions, selectedCampTypes, priceRange, userPreferences, allCamps]);
 
   const handleToggleFilter = (filter: string) => {
     setSelectedFilters((prev) =>
