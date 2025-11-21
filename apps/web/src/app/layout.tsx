@@ -1,11 +1,9 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import dynamic from 'next/dynamic'
-import { AuthProvider } from '@/contexts/AuthContext'
 
-// 动态导入客户端组件，禁用 SSR
-const AuthSync = dynamic(() => import('@/components/AuthSync'), { ssr: false })
-const AuthBanner = dynamic(() => import('@/components/AuthBanner'), { ssr: false })
+// 动态导入 AuthWrapper，禁用 SSR
+const AuthWrapper = dynamic(() => import('@/components/AuthWrapper'), { ssr: false })
 
 export const metadata: Metadata = {
   title: 'Nomad NZ - 新西兰露营智能助手',
@@ -20,11 +18,9 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <body className="antialiased">
-        <AuthProvider>
-          <AuthSync />
-          <AuthBanner />
+        <AuthWrapper>
           {children}
-        </AuthProvider>
+        </AuthWrapper>
       </body>
     </html>
   )
