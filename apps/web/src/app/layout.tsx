@@ -1,8 +1,11 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import dynamic from 'next/dynamic'
 import { AuthProvider } from '@/contexts/AuthContext'
-import AuthBanner from '@/components/AuthBanner'
-import AuthSync from '@/components/AuthSync'
+
+// 动态导入客户端组件，禁用 SSR
+const AuthSync = dynamic(() => import('@/components/AuthSync'), { ssr: false })
+const AuthBanner = dynamic(() => import('@/components/AuthBanner'), { ssr: false })
 
 export const metadata: Metadata = {
   title: 'Nomad NZ - 新西兰露营智能助手',
