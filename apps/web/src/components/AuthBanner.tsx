@@ -25,9 +25,6 @@ export default function AuthBanner() {
     }
   }, []);
 
-  // 在 SSR 时不渲染
-  if (!mounted) return null;
-
   // 监听登录状态，显示同步成功提示
   useEffect(() => {
     if (user && isConfigured) {
@@ -36,6 +33,9 @@ export default function AuthBanner() {
       return () => clearTimeout(timer);
     }
   }, [user, isConfigured]);
+
+  // 在 SSR 时不渲染
+  if (!mounted) return null;
 
   const handleDismiss = () => {
     setDismissed(true);
