@@ -96,7 +96,7 @@ export default function ProfilePage() {
         const favoriteIds = JSON.parse(favorites);
         const camps = favoriteIds
           .map((id: string) => (campsData as Camp[]).find((c: Camp) => c.id === id))
-          .filter((c): c is Camp => c !== undefined);
+          .filter((c: Camp | undefined): c is Camp => c !== undefined);
         setFavoriteCamps(camps);
       } catch (error) {
         console.error('加载收藏营地失败:', error);
