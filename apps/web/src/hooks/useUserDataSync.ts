@@ -12,6 +12,9 @@ export function useUserDataSync() {
   const hasSyncedRef = useRef(false);
 
   useEffect(() => {
+    // 只在客户端执行
+    if (typeof window === 'undefined') return;
+    
     if (!user || !session || !isConfigured || hasSyncedRef.current) return;
 
     const syncData = async () => {

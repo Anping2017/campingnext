@@ -10,14 +10,23 @@ export default function AuthBanner() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const [showSyncSuccess, setShowSyncSuccess] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // 检查是否已关闭过（存储在 localStorage）
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const dismissedState = localStorage.getItem('authBannerDismissed');
     if (dismissedState === 'true') {
       setDismissed(true);
     }
   }, []);
+
+  // 在 SSR 时不渲染
+  if (!mounted) return null;
 
   // 监听登录状态，显示同步成功提示
   useEffect(() => {
