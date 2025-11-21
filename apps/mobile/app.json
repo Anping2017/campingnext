@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "露营推荐",
+    "slug": "camping-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.camping.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.camping.app"
+    },
+    "scheme": "camping",
+    "plugins": [
+      "expo-router"
+    ]
+  }
+}

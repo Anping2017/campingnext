@@ -1,0 +1,13 @@
+# 忽略不需要部署的文件
+node_modules
+.next
+.env.local
+.env*.local
+*.log
+.DS_Store
+*.md
+!README.md
+apps/mobile
+packages/common/node_modules
+apps/web/node_modules
+

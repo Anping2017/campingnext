@@ -1,0 +1,69 @@
+[
+  {
+    "id": "cathedral-cove",
+    "name": "Cathedral Cove Campsite",
+    "region": "Coromandel",
+    "price": 20,
+    "tags": ["海边", "适合新手", "景色好"],
+    "lat": -36.5,
+    "lng": 175.8,
+    "description": "位于科罗曼德半岛的美丽海边露营地，适合家庭和初学者。",
+    "facilities": ["厕所", "饮用水", "停车场"],
+    "difficulty": "easy",
+    "rating": 4.5
+  },
+  {
+    "id": "tongariro-alpine",
+    "name": "Tongariro Alpine Crossing",
+    "region": "Central North Island",
+    "price": 0,
+    "tags": ["徒步", "火山", "挑战"],
+    "lat": -39.2,
+    "lng": 175.6,
+    "description": "新西兰最著名的单日徒步路线，穿越活火山景观。",
+    "facilities": ["停车场", "信息中心"],
+    "difficulty": "hard",
+    "rating": 4.8
+  },
+  {
+    "id": "abel-tasman",
+    "name": "Abel Tasman National Park",
+    "region": "Nelson",
+    "price": 15,
+    "tags": ["海边", "徒步", "皮划艇"],
+    "lat": -40.8,
+    "lng": 173.0,
+    "description": "新西兰最受欢迎的海岸线国家公园，金色沙滩和清澈海水。",
+    "facilities": ["厕所", "露营地", "停车场"],
+    "difficulty": "medium",
+    "rating": 4.7
+  },
+  {
+    "id": "milford-sound",
+    "name": "Milford Sound Campsite",
+    "region": "Fiordland",
+    "price": 25,
+    "tags": ["峡湾", "世界遗产", "风景"],
+    "lat": -44.6,
+    "lng": 167.9,
+    "description": "世界著名的米尔福德峡湾，壮观的瀑布和山峰。",
+    "facilities": ["厕所", "商店", "停车场"],
+    "difficulty": "easy",
+    "rating": 4.9
+  },
+  {
+    "id": "lake-tekapo",
+    "name": "Lake Tekapo Campground",
+    "region": "Canterbury",
+    "price": 18,
+    "tags": ["湖边", "星空", "摄影"],
+    "lat": -43.9,
+    "lng": 170.5,
+    "description": "特卡波湖畔的露营地，以星空保护区闻名。",
+    "facilities": ["厕所", "淋浴", "厨房"],
+    "difficulty": "easy",
+    "rating": 4.6
+  }
+]
+
+
