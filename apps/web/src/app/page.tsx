@@ -1,5 +1,8 @@
 'use client';
 
+// 强制动态渲染，避免静态生成时的 Hook 错误
+export const dynamic = 'force-dynamic';
+
 import { useState, useEffect } from 'react';
 import CampCard from '@/components/CampCard';
 import PostCard from '@/components/PostCard';
