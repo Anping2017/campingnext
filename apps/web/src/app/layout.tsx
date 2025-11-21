@@ -3,7 +3,6 @@ import './globals.css'
 import { AuthProvider } from '@/contexts/AuthContext'
 import AuthBanner from '@/components/AuthBanner'
 import AuthSync from '@/components/AuthSync'
-import ClientOnly from '@/components/ClientOnly'
 
 export const metadata: Metadata = {
   title: 'Nomad NZ - 新西兰露营智能助手',
@@ -18,20 +17,11 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <body className="antialiased">
-        <ClientOnly
-          fallback={
-            <>
-              {/* SSR fallback: render children without auth context */}
-              {children}
-            </>
-          }
-        >
-          <AuthProvider>
-            <AuthSync />
-            <AuthBanner />
-            {children}
-          </AuthProvider>
-        </ClientOnly>
+        <AuthProvider>
+          <AuthSync />
+          <AuthBanner />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   )
