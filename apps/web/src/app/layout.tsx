@@ -1,12 +1,5 @@
 import type { Metadata } from 'next'
 import './globals.css'
-import dynamic from 'next/dynamic'
-
-// 动态导入 AuthWrapper，禁用 SSR
-const AuthWrapper = dynamic(() => import('@/components/AuthWrapper'), { 
-  ssr: false,
-  loading: () => <></>, // 加载时返回空内容
-})
 
 export const metadata: Metadata = {
   title: 'Nomad NZ - 新西兰露营智能助手',
@@ -21,9 +14,7 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <body className="antialiased">
-        <AuthWrapper>
-          {children}
-        </AuthWrapper>
+        {children}
       </body>
     </html>
   )

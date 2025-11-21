@@ -8,9 +8,7 @@ import MyTrips from '@/components/MyTrips';
 import PreferencesSettings from '@/components/PreferencesSettings';
 import ProfileInfo from '@/components/ProfileInfo';
 import NavBar from '@/components/NavBar';
-import { useAuth } from '@/contexts/AuthContext';
-import { useUserDataSync } from '@/hooks/useUserDataSync';
-import { User, LogOut } from 'lucide-react';
+import { User } from 'lucide-react';
 import { Camp } from '@/types/camp';
 import { Post } from '@/types/post';
 import campsData from '@/data/camps.json';
@@ -63,14 +61,10 @@ interface TripPlan {
 }
 
 export default function ProfilePage() {
-  const { user, signOut } = useAuth();
   const [activeTab, setActiveTab] = useState('camps');
   const [favoriteCamps, setFavoriteCamps] = useState<Camp[]>([]);
   const [myPosts, setMyPosts] = useState<Post[]>([]);
   const [myTrips, setMyTrips] = useState<TripPlan[]>([]);
-
-  // 自动同步用户数据
-  useUserDataSync();
 
   // 加载行程数据
   const loadTrips = () => {
@@ -96,6 +90,7 @@ export default function ProfilePage() {
         const favoriteIds = JSON.parse(favorites);
         const camps = favoriteIds
           .map((id: string) => (campsData as Camp[]).find((c: Camp) => c.id === id))
+
           .filter((c: Camp | undefined): c is Camp => c !== undefined);
         setFavoriteCamps(camps);
       } catch (error) {
@@ -141,11 +136,6 @@ export default function ProfilePage() {
     }
   };
 
-  const handleSignOut = async () => {
-    await signOut();
-    window.location.reload();
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white pb-20">
       <div className="container mx-auto px-4 py-6 max-w-4xl">
@@ -155,18 +145,6 @@ export default function ProfilePage() {
             <User className="w-6 h-6 text-green-600" />
             <h1 className="text-3xl font-bold text-gray-900">我的露营档案</h1>
           </div>
-          {user && (
-            <div className="flex items-center gap-3">
-              <span className="text-sm text-gray-600">{user.email}</span>
-              <button
-                onClick={handleSignOut}
-                className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <LogOut className="w-4 h-4" />
-                退出登录
-              </button>
-            </div>
-          )}
         </div>
 
         {/* 标签页 */}
