@@ -9,20 +9,23 @@ import {
   MapPin,
   DollarSign,
   Star,
-  Users,
   Route,
   Heart,
   Share2,
+  Phone,
+  Mail,
+  Globe,
+  ChevronDown,
+  ChevronUp,
   Calendar,
-  Car,
-  WashingMachine,
-  Tent,
+  Dog,
 } from 'lucide-react';
 import NavBar from '@/components/NavBar';
 import CampImageGallery from '@/components/CampImageGallery';
 import CampMap from '@/components/CampMap';
 import CampComments from '@/components/CampComments';
-import AISummary from '@/components/AISummary';
+import CampTags from '@/components/CampTags';
+import CampFacilities from '@/components/CampFacilities';
 import { formatPrice, formatDifficulty, formatRating } from '@/utils/format';
 import Link from 'next/link';
 
@@ -61,12 +64,44 @@ const mockComments = [
   },
 ];
 
+// 可折叠信息块组件
+function CollapsibleSection({
+  title,
+  children,
+  defaultOpen = false,
+}: {
+  title: string;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  return (
+    <div className="border-b border-gray-200 py-6">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between text-left"
+      >
+        <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+        {isOpen ? (
+          <ChevronUp className="w-5 h-5 text-gray-500" />
+        ) : (
+          <ChevronDown className="w-5 h-5 text-gray-500" />
+        )}
+      </button>
+      {isOpen && <div className="mt-4">{children}</div>}
+    </div>
+  );
+}
+
 export default function CampDetailPage() {
   const params = useParams();
   const router = useRouter();
   const [camp, setCamp] = useState<Camp | null>(null);
   const [loading, setLoading] = useState(true);
   const [isFavorited, setIsFavorited] = useState(false);
+  const [showAllFacilities, setShowAllFacilities] = useState(false);
+  const [showAllTags, setShowAllTags] = useState(false);
 
   useEffect(() => {
     const loadCamp = async () => {
@@ -80,7 +115,7 @@ export default function CampDetailPage() {
           const campData = await response.json();
           setCamp(campData);
           
-          // 检查是否已收藏（仍使用 localStorage，因为收藏功能在 user_favorites 表中）
+          // 检查是否已收藏
           const favorites = localStorage.getItem('favoriteCamps');
           if (favorites) {
             const favoriteIds = JSON.parse(favorites);
@@ -168,7 +203,7 @@ export default function CampDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-green-50 to-white pb-20">
+      <div className="min-h-screen bg-white pb-20">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center py-12">加载中...</div>
         </div>
@@ -178,7 +213,7 @@ export default function CampDetailPage() {
 
   if (!camp) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-green-50 to-white pb-20">
+      <div className="min-h-screen bg-white pb-20">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center py-12">
             <p className="text-gray-500 mb-4">找不到该营地</p>
@@ -191,178 +226,347 @@ export default function CampDetailPage() {
     );
   }
 
-  const campingTypes = camp.tags.includes('海边') ? ['帐篷', '房车'] : ['帐篷', '徒步'];
+  // 限制显示数量
+  const displayedFacilities = showAllFacilities ? camp.facilities : camp.facilities.slice(0, 10);
+  const displayedTags = showAllTags ? camp.tags : camp.tags.slice(0, 10);
+  const hasMoreFacilities = camp.facilities.length > 10;
+  const hasMoreTags = camp.tags.length > 10;
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-white pb-20">
-      <div className="container mx-auto px-4 py-6 max-w-4xl">
-        {/* 返回按钮 */}
-        <button
-          onClick={() => router.back()}
-          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          <span>返回</span>
-        </button>
+  return (    <div className="min-h-screen bg-white pb-20">
+      {/* 返回按钮 - 固定在顶部 */}
+      <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-sm border-b border-gray-200">
+        <div className="container mx-auto px-4 py-3 max-w-7xl">
+          <button
+            onClick={() => router.back()}
+            className="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span className="font-medium">返回</span>
+          </button>
+        </div>
+      </div>
 
-        {/* 营地封面图和基本信息 */}
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-6">
-          <CampImageGallery
-            images={mockCommunityImages}
-            coverImage={`https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?w=1200&h=600&fit=crop`}
-          />
+      <div className="container mx-auto px-4 py-6 max-w-7xl">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* 左侧主要内容区 */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* 图片轮播 */}
+            <div className="rounded-2xl overflow-hidden">
+              <CampImageGallery
+                images={mockCommunityImages}
+                coverImage={`https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?w=1200&h=600&fit=crop`}
+              />
+            </div>
 
-          <div className="p-6">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex-1">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">{camp.name}</h1>
-                <div className="flex items-center gap-2 text-gray-600 mb-3">
-                  <MapPin className="w-5 h-5" />
-                  <span>{camp.region}</span>
+            {/* 标题和基本信息 */}
+            <div>
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1">
+                  <h1 className="text-3xl font-bold text-gray-900 mb-2">{camp.name}</h1>
+                  <div className="flex items-center gap-4 text-gray-600 mb-4">
+                    <div className="flex items-center gap-1">
+                      <MapPin className="w-4 h-4" />
+                      <span className="text-sm">{camp.region}</span>
+                    </div>
+                    {camp.address && (
+                      <div className="flex items-center gap-1">
+                        <span className="text-sm">{camp.address}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-4 flex-wrap">
+                    <div className="flex items-center gap-1 text-yellow-500">
+                      <Star className="w-5 h-5 fill-current" />
+                      <span className="font-semibold">{formatRating(camp.rating)}</span>
+                    </div>
+                    <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
+                      {formatDifficulty(camp.difficulty)}
+                    </span>
+                    {camp.campType && (
+                      <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
+                        {camp.campType}
+                      </span>
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-1 text-yellow-500">
-                    <Star className="w-5 h-5 fill-current" />
+              </div>
+            </div>
+
+            {/* 评价总结（优点和缺点） */}
+            {(camp.reviewPros && camp.reviewPros.length > 0) || (camp.reviewCons && camp.reviewCons.length > 0) ? (
+              <div className="border border-gray-200 rounded-2xl p-6 bg-white">
+                <h2 className="text-xl font-semibold mb-4">用户评价总结</h2>
+                <div className="grid md:grid-cols-2 gap-6">
+                  {/* 优点 */}
+                  {camp.reviewPros && camp.reviewPros.length > 0 && (
+                    <div>
+                      <h3 className="text-base font-medium text-green-700 mb-3 flex items-center gap-2">
+                        <span className="text-xl">👍</span>
+                        <span>优点</span>
+                      </h3>
+                      <ul className="space-y-2">
+                        {camp.reviewPros.map((pro, index) => (
+                          <li key={index} className="flex items-start gap-2 text-gray-700 text-sm">
+                            <span className="text-green-500 mt-1">•</span>
+                            <span>{pro}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {/* 缺点 */}
+                  {camp.reviewCons && camp.reviewCons.length > 0 && (
+                    <div>
+                      <h3 className="text-base font-medium text-orange-700 mb-3 flex items-center gap-2">
+                        <span className="text-xl">⚠️</span>
+                        <span>需要注意</span>
+                      </h3>
+                      <ul className="space-y-2">
+                        {camp.reviewCons.map((con, index) => (
+                          <li key={index} className="flex items-start gap-2 text-gray-700 text-sm">
+                            <span className="text-orange-500 mt-1">•</span>
+                            <span>{con}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : null}
+
+            {/* 描述 */}
+            <div className="border-b border-gray-200 pb-6">
+              <h2 className="text-xl font-semibold mb-4">关于这个营地</h2>
+              <p className="text-gray-700 leading-relaxed whitespace-pre-line">{camp.description}</p>
+            </div>
+
+            {/* 设施 - 可折叠，只显示前10个 */}
+            {camp.facilities && camp.facilities.length > 0 && (
+              <div className="border-b border-gray-200 pb-6">
+                <h2 className="text-xl font-semibold mb-4">设施</h2>
+                <CampFacilities facilities={displayedFacilities} size="md" showIcons={true} layout="grid" />
+                {hasMoreFacilities && (
+                  <button
+                    onClick={() => setShowAllFacilities(!showAllFacilities)}
+                    className="mt-4 text-green-600 hover:text-green-700 font-medium text-sm flex items-center gap-1"
+                  >
+                    {showAllFacilities ? (
+                      <>
+                        <ChevronUp className="w-4 h-4" />
+                        收起设施
+                      </>
+                    ) : (
+                      <>
+                        <ChevronDown className="w-4 h-4" />
+                        显示全部 {camp.facilities.length} 个设施
+                      </>
+                    )}
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* 标签 - 可折叠，只显示前10个 */}
+            {camp.tags && camp.tags.length > 0 && (
+              <div className="border-b border-gray-200 pb-6">
+                <h2 className="text-xl font-semibold mb-4">特色标签</h2>
+                <CampTags tags={displayedTags} size="md" showIcons={true} />
+                {hasMoreTags && (
+                  <button
+                    onClick={() => setShowAllTags(!showAllTags)}
+                    className="mt-4 text-green-600 hover:text-green-700 font-medium text-sm flex items-center gap-1"
+                  >
+                    {showAllTags ? (
+                      <>
+                        <ChevronUp className="w-4 h-4" />
+                        收起标签
+                      </>
+                    ) : (
+                      <>
+                        <ChevronDown className="w-4 h-4" />
+                        显示全部 {camp.tags.length} 个标签
+                      </>
+                    )}
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* 联系方式 - 可折叠 */}
+            {(camp.phone || camp.email || camp.website) && (
+              <CollapsibleSection title="联系方式" defaultOpen={false}>
+                <div className="space-y-4">
+                  {camp.phone && (
+                    <div className="flex items-start gap-3">
+                      <Phone className="w-5 h-5 text-gray-400 mt-0.5" />
+                      <div>
+                        <div className="text-sm font-medium text-gray-700 mb-1">电话</div>
+                        <a href={`tel:${camp.phone}`} className="text-sm text-green-600 hover:text-green-700">
+                          {camp.phone}
+                        </a>
+                      </div>
+                    </div>
+                  )}
+                  {camp.email && (
+                    <div className="flex items-start gap-3">
+                      <Mail className="w-5 h-5 text-gray-400 mt-0.5" />
+                      <div>
+                        <div className="text-sm font-medium text-gray-700 mb-1">邮箱</div>
+                        <a href={`mailto:${camp.email}`} className="text-sm text-green-600 hover:text-green-700">
+                          {camp.email}
+                        </a>
+                      </div>
+                    </div>
+                  )}
+                  {camp.website && (
+                    <div className="flex items-start gap-3">
+                      <Globe className="w-5 h-5 text-gray-400 mt-0.5" />
+                      <div>
+                        <div className="text-sm font-medium text-gray-700 mb-1">网站</div>
+                        <a
+                          href={camp.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-green-600 hover:text-green-700"
+                        >
+                          访问网站
+                        </a>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </CollapsibleSection>
+            )}
+
+            {/* 宠物政策 - 可折叠 */}
+            {camp.petPolicy && (
+              <CollapsibleSection title="宠物政策" defaultOpen={false}>
+                <div className="flex items-start gap-3">
+                  <Dog className="w-5 h-5 text-gray-400 mt-0.5" />
+                  <div>
+                    <div className="text-sm font-medium text-gray-700 mb-1">宠物政策</div>
+                    <div className="text-sm text-gray-600">
+                      {camp.petPolicy === 'allowed' && '可宠'}
+                      {camp.petPolicy === 'not-allowed' && '不可宠'}
+                      {camp.petPolicy === 'seasonal' && '淡季可宠'}
+                      {camp.petPolicy === 'conditional' && '条件限制可宠'}
+                    </div>
+                  </div>
+                </div>
+              </CollapsibleSection>
+            )}
+
+            {/* 位置信息 - 可折叠 */}
+            <CollapsibleSection title="位置" defaultOpen={false}>
+              <div className="space-y-4">
+                {camp.address ? (
+                  <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg">
+                    <MapPin className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <div className="text-sm font-medium text-gray-700 mb-1">详细地址</div>
+                      <div className="text-sm text-gray-600">{camp.address}</div>
+                    </div>
+                  </div>
+                ) : null}
+                <div className="h-64 rounded-xl overflow-hidden">
+                  <CampMap lat={camp.lat} lng={camp.lng} name={camp.name} />
+                </div>
+              </div>
+            </CollapsibleSection>
+
+            {/* 社区照片 - 可折叠 */}
+            <CollapsibleSection title="社区照片" defaultOpen={false}>
+              <div className="grid grid-cols-3 gap-2">
+                {mockCommunityImages.map((image, index) => (
+                  <div
+                    key={index}
+                    className="aspect-square rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
+                  >
+                    <img
+                      src={image}
+                      alt={`社区照片 ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+              <p className="text-sm text-gray-500 mt-2">来自社区用户分享</p>
+            </CollapsibleSection>
+
+            {/* 热门评论 - 可折叠 */}
+            <CollapsibleSection title="热门评论" defaultOpen={false}>
+              <CampComments comments={mockComments} />
+            </CollapsibleSection>
+          </div>
+
+          {/* 右侧固定卡片（类似 Airbnb 的预订卡片） */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-20">
+              <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-lg">
+                {/* 价格和评分 */}
+                <div className="mb-6">
+                  <div className="flex items-baseline gap-2 mb-2">
+                    <span className="text-2xl font-bold text-gray-900">{formatPrice(camp.price)}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                     <span className="font-medium">{formatRating(camp.rating)}</span>
-                  </div>
-                  <span className="text-xs px-3 py-1 bg-green-100 text-green-700 rounded-full">
-                    {formatDifficulty(camp.difficulty)}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <p className="text-gray-700 mb-6 leading-relaxed">{camp.description}</p>
-
-            {/* 基础信息卡片 */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg mb-6">
-              <div className="flex items-center gap-2">
-                <DollarSign className="w-5 h-5 text-green-600" />
-                <div>
-                  <div className="text-xs text-gray-500">费用</div>
-                  <div className="font-semibold text-sm">{formatPrice(camp.price)}</div>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <WashingMachine className="w-5 h-5 text-green-600" />
-                <div>
-                  <div className="text-xs text-gray-500">厕所</div>
-                  <div className="font-semibold text-sm">
-                    {camp.facilities.includes('厕所') ? '有' : '无'}
+                    <span className="text-gray-400">•</span>
+                    <span>{camp.region}</span>
                   </div>
                 </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Car className="w-5 h-5 text-green-600" />
-                <div>
-                  <div className="text-xs text-gray-500">车位</div>
-                  <div className="font-semibold text-sm">
-                    {camp.facilities.includes('停车场') ? '有' : '无'}
+
+                {/* 操作按钮 */}
+                <div className="space-y-3 mb-6">
+                  <button
+                    onClick={handleAddToTrip}
+                    className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <Route className="w-5 h-5" />
+                    加入行程
+                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleFavorite}
+                      className={`flex-1 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
+                        isFavorited
+                          ? 'bg-red-50 text-red-600 border border-red-200'
+                          : 'border border-gray-300 hover:bg-gray-50'
+                      }`}
+                    >
+                      <Heart className={`w-5 h-5 ${isFavorited ? 'fill-current' : ''}`} />
+                      {isFavorited ? '已收藏' : '收藏'}
+                    </button>
+                    <button
+                      onClick={handleShare}
+                      className="px-4 py-3 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+                    >
+                      <Share2 className="w-5 h-5" />
+                    </button>
                   </div>
                 </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Tent className="w-5 h-5 text-green-600" />
-                <div>
-                  <div className="text-xs text-gray-500">露营方式</div>
-                  <div className="font-semibold text-sm">{campingTypes.join('、')}</div>
+
+                {/* 快速信息 */}
+                <div className="border-t border-gray-200 pt-6 space-y-4">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-600">营地类型</span>
+                    <span className="font-medium text-gray-900">{camp.campType || '未指定'}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-600">难度</span>
+                    <span className="font-medium text-gray-900">{formatDifficulty(camp.difficulty)}</span>
+                  </div>
+                  {camp.address && (
+                    <div className="flex items-start justify-between text-sm">
+                      <span className="text-gray-600">位置</span>
+                      <span className="font-medium text-gray-900 text-right max-w-[60%] line-clamp-2">
+                        {camp.address}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
-
-            {/* 操作按钮 */}
-            <div className="flex gap-3">
-              <button
-                onClick={handleAddToTrip}
-                className="flex-1 bg-green-600 text-white py-3 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
-              >
-                <Route className="w-5 h-5" />
-                加入行程
-              </button>
-              <button
-                onClick={handleFavorite}
-                className={`px-6 py-3 rounded-lg font-medium transition-colors flex items-center gap-2 ${
-                  isFavorited
-                    ? 'bg-red-50 text-red-600 border border-red-200'
-                    : 'border border-gray-300 hover:bg-gray-50'
-                }`}
-              >
-                <Heart className={`w-5 h-5 ${isFavorited ? 'fill-current' : ''}`} />
-                {isFavorited ? '已收藏' : '收藏'}
-              </button>
-              <button
-                onClick={handleShare}
-                className="px-6 py-3 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors"
-              >
-                <Share2 className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* AI 摘要 */}
-        <div className="mb-6">
-          <AISummary campId={camp.id} campName={camp.name} />
-        </div>
-
-        {/* 真实照片 */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">真实照片</h2>
-          <div className="grid grid-cols-3 gap-2">
-            {mockCommunityImages.map((image, index) => (
-              <div
-                key={index}
-                className="aspect-square rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
-              >
-                <img
-                  src={image}
-                  alt={`社区照片 ${index + 1}`}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            ))}
-          </div>
-          <p className="text-sm text-gray-500 mt-2">来自社区用户分享</p>
-        </div>
-
-        {/* 路线导航 */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">路线导航</h2>
-          <CampMap lat={camp.lat} lng={camp.lng} name={camp.name} />
-        </div>
-
-        {/* 热门评论 */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">热门评论</h2>
-          <CampComments comments={mockComments} />
-        </div>
-
-        {/* 标签和设施 */}
-        <div className="bg-white rounded-xl shadow-lg p-6">
-          <div className="mb-4">
-            <h3 className="text-sm font-medium text-gray-700 mb-2">标签</h3>
-            <div className="flex flex-wrap gap-2">
-              {camp.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </div>
-          <div>
-            <h3 className="text-sm font-medium text-gray-700 mb-2">设施</h3>
-            <div className="flex flex-wrap gap-2">
-              {camp.facilities.map((facility) => (
-                <span
-                  key={facility}
-                  className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
-                >
-                  {facility}
-                </span>
-              ))}
             </div>
           </div>
         </div>

@@ -59,10 +59,10 @@ export function createClientComponentClient() {
         key: key ? '已设置' : '未设置',
       });
     }
-  return createBrowserClient(
+    return createBrowserClient(
       'https://placeholder.supabase.co',
       'placeholder-key'
-  );
+    );
   }
 
   return createBrowserClient(url.trim(), key.trim());
@@ -75,10 +75,10 @@ export function createServerComponentClient() {
 
   if (!url || !key) {
     console.warn('Supabase 未配置，认证功能不可用。应用将使用本地存储。');
-  return createClient(
+    return createClient(
       'https://placeholder.supabase.co',
       'placeholder-key'
-  );
+    );
   }
 
   return createClient(url, key);

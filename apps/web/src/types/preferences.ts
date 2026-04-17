@@ -1,7 +1,7 @@
 // 用户偏好类型定义
 export interface UserPreferences {
   // 营地类型偏好
-  campTypes: string[]; // ['DOC', 'Holiday Park', 'Freedom Camping']
+  campTypes: string[]; // ['DOC', 'Holiday Park', 'Freedom Camping', 'Local Camp', 'Private Campground']
   
   // 难度偏好
   difficulty: ('easy' | 'medium' | 'hard')[]; // 可多选
@@ -12,11 +12,8 @@ export interface UserPreferences {
   // 设施偏好
   facilities: string[]; // ['厕所', '饮用水', '停车场', '淋浴', '电源']
   
-  // 价格偏好
-  priceRange: {
-    min: number;
-    max: number;
-  } | null;
+  // 价格偏好（分类选择）
+  priceCategories: ('free' | 'cheap' | 'medium' | 'expensive')[];
   
   // 标签偏好（用于发现营地）
   tags: string[]; // ['适合新手', '适合带娃', '景色好', '免费']
@@ -39,7 +36,7 @@ export const defaultPreferences: UserPreferences = {
   difficulty: [],
   favoriteRegions: [],
   facilities: [],
-  priceRange: null,
+  priceCategories: [],
   tags: [],
   personalInfo: {
     people: 2,

@@ -83,3 +83,6 @@ npx expo install --fix
 两个平台可以有不同的 React 版本，不会影响功能。
 
 
+
+
+

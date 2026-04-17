@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import TripForm, { TripFormData } from '@/components/TripForm';
 import TripCard from '@/components/TripCard';
@@ -36,7 +36,7 @@ interface TripPlan {
   createdAt: string;
 }
 
-function TripPageContent() {
+export default function TripPage() {
   const searchParams = useSearchParams();
   const tripId = searchParams.get('tripId');
   const isEdit = searchParams.get('edit') === 'true';
@@ -350,20 +350,5 @@ function TripPageContent() {
 
       <NavBar />
     </div>
-  );
-}
-
-export default function TripPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-b from-green-50 to-white pb-20 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">加载中...</p>
-        </div>
-      </div>
-    }>
-      <TripPageContent />
-    </Suspense>
   );
 }

@@ -43,7 +43,7 @@ export default function ExplorePage() {
   const [selectedDifficulty, setSelectedDifficulty] = useState<string[]>([]);
   const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
   const [selectedCampTypes, setSelectedCampTypes] = useState<string[]>([]);
-  const [priceRange, setPriceRange] = useState<{ min: number; max: number } | null>(null);
+  const [selectedPriceCategories, setSelectedPriceCategories] = useState<('free' | 'cheap' | 'medium' | 'expensive')[]>([]);
 
   // 加载用户偏好
   useEffect(() => {
@@ -59,8 +59,8 @@ export default function ExplorePage() {
     if (prefs.campTypes.length > 0) {
       setSelectedCampTypes(prefs.campTypes);
     }
-    if (prefs.priceRange) {
-      setPriceRange(prefs.priceRange);
+    if (prefs.priceCategories && prefs.priceCategories.length > 0) {
+      setSelectedPriceCategories(prefs.priceCategories);
     }
   }, []);
 
@@ -168,10 +168,10 @@ export default function ExplorePage() {
       });
     }
 
-    // 价格筛选
-    if (priceRange) {
+    // 价格分类筛选
+    if (selectedPriceCategories.length > 0) {
       result = result.filter(
-        (camp) => camp.price >= priceRange.min && camp.price <= priceRange.max
+        (camp) => selectedPriceCategories.includes(camp.price)
       );
     }
 
@@ -203,7 +203,7 @@ export default function ExplorePage() {
     }
 
     return result;
-  }, [searchQuery, selectedFilters, selectedDifficulty, selectedRegions, selectedCampTypes, priceRange, userPreferences, allCamps]);
+  }, [searchQuery, selectedFilters, selectedDifficulty, selectedRegions, selectedCampTypes, selectedPriceCategories, userPreferences, allCamps]);
 
   const handleToggleFilter = (filter: string) => {
     setSelectedFilters((prev) =>
@@ -217,7 +217,7 @@ export default function ExplorePage() {
     setSelectedDifficulty([]);
     setSelectedRegions([]);
     setSelectedCampTypes([]);
-    setPriceRange(null);
+    setSelectedPriceCategories([]);
   };
 
   const hasActiveFilters = 
@@ -225,7 +225,7 @@ export default function ExplorePage() {
     selectedDifficulty.length > 0 ||
     selectedRegions.length > 0 ||
     selectedCampTypes.length > 0 ||
-    priceRange !== null;
+      selectedPriceCategories.length > 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white pb-20">
@@ -289,7 +289,7 @@ export default function ExplorePage() {
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-2">营地类型</label>
                 <div className="flex flex-wrap gap-2">
-                  {['DOC', 'Holiday Park', 'Freedom Camping'].map((type) => (
+                  {['DOC', 'Holiday Park', 'Freedom Camping', 'Local Camp', 'Private Campground'].map((type) => (
                     <button
                       key={type}
                       onClick={() => {
@@ -367,43 +367,33 @@ export default function ExplorePage() {
                 </div>
               </div>
 
-              {/* 价格范围 */}
+              {/* 价格分类 */}
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-2">价格范围（每晚）</label>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="number"
-                    min="0"
-                    placeholder="最低"
-                    value={priceRange?.min || ''}
-                    onChange={(e) => {
-                      setPriceRange({
-                        min: Number(e.target.value) || 0,
-                        max: priceRange?.max || 100,
-                      });
-                    }}
-                    className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  />
-                  <span className="text-gray-500">-</span>
-                  <input
-                    type="number"
-                    min="0"
-                    placeholder="最高"
-                    value={priceRange?.max || ''}
-                    onChange={(e) => {
-                      setPriceRange({
-                        min: priceRange?.min || 0,
-                        max: Number(e.target.value) || 100,
-                      });
-                    }}
-                    className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  />
-                  <button
-                    onClick={() => setPriceRange(null)}
-                    className="px-3 py-2 text-xs text-gray-600 hover:text-gray-900"
-                  >
-                    不限
-                  </button>
+                <label className="block text-xs font-medium text-gray-700 mb-2">价格分类</label>
+                <div className="flex flex-wrap gap-2">
+                  {(['free', 'cheap', 'medium', 'expensive'] as const).map((category) => {
+                    const labels = { free: '免费', cheap: '便宜', medium: '中等', expensive: '较贵' };
+                    const isSelected = selectedPriceCategories.includes(category);
+                    return (
+                      <button
+                        key={category}
+                        onClick={() => {
+                          if (isSelected) {
+                            setSelectedPriceCategories(selectedPriceCategories.filter(c => c !== category));
+                          } else {
+                            setSelectedPriceCategories([...selectedPriceCategories, category]);
+                          }
+                        }}
+                        className={`px-3 py-1.5 text-xs rounded-lg transition-colors ${
+                          isSelected
+                            ? 'bg-green-600 text-white'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                      >
+                        {labels[category]}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -426,8 +416,8 @@ export default function ExplorePage() {
             if (prefs.campTypes.length > 0) {
               setSelectedCampTypes(prefs.campTypes);
             }
-            if (prefs.priceRange) {
-              setPriceRange(prefs.priceRange);
+            if (prefs.priceCategories && prefs.priceCategories.length > 0) {
+              setSelectedPriceCategories(prefs.priceCategories);
             }
           }}
         />

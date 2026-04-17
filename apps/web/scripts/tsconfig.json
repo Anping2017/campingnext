@@ -1,0 +1,15 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022"],
+    "jsx": "preserve",
+    "noEmit": true,
+    "isolatedModules": false,
+    "types": ["node"]
+  },
+  "include": ["./**/*.ts", "../src/types/**/*.ts", "../src/lib/camp-metadata.ts", "../src/lib/tag-engine.ts"],
+  "exclude": ["node_modules", "../node_modules"]
+}

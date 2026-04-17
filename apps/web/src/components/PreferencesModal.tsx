@@ -61,7 +61,7 @@ export default function PreferencesModal({ isOpen, onClose, onSave }: Preference
   const regions = getAllRegions();
   const facilities = getAllFacilities();
 
-  const campTypes = ['DOC', 'Holiday Park', 'Freedom Camping'];
+  const campTypes = ['DOC', 'Holiday Park', 'Freedom Camping', 'Local Camp', 'Private Campground'];
   const tags = ['适合新手', '适合带娃', '景色好', '免费', '热门'];
   const difficultyOptions = [
     { value: 'easy', label: '简单' },
@@ -207,50 +207,35 @@ export default function PreferencesModal({ isOpen, onClose, onSave }: Preference
           {/* 价格范围 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-3">
-              价格范围（每晚）
+              价格分类
             </label>
-            <div className="flex items-center gap-3">
-              <input
-                type="number"
-                min="0"
-                placeholder="最低"
-                value={preferences.priceRange?.min || ''}
-                onChange={(e) => {
-                  setPreferences((prev) => ({
-                    ...prev,
-                    priceRange: {
-                      min: Number(e.target.value) || 0,
-                      max: prev.priceRange?.max || 100,
-                    },
-                  }));
-                }}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
-              <span className="text-gray-500">-</span>
-              <input
-                type="number"
-                min="0"
-                placeholder="最高"
-                value={preferences.priceRange?.max || ''}
-                onChange={(e) => {
-                  setPreferences((prev) => ({
-                    ...prev,
-                    priceRange: {
-                      min: prev.priceRange?.min || 0,
-                      max: Number(e.target.value) || 100,
-                    },
-                  }));
-                }}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
-              <button
-                onClick={() => {
-                  setPreferences((prev) => ({ ...prev, priceRange: null }));
-                }}
-                className="px-3 py-2 text-sm text-gray-600 hover:text-gray-900"
-              >
-                不限
-              </button>
+            <div className="flex flex-wrap gap-2">
+              {(['free', 'cheap', 'medium', 'expensive'] as const).map((category) => {
+                const labels = { free: '免费', cheap: '便宜', medium: '中等', expensive: '较贵' };
+                const isSelected = preferences.priceCategories?.includes(category) || false;
+                return (
+                  <button
+                    key={category}
+                    onClick={() => {
+                      setPreferences((prev) => {
+                        const current = prev.priceCategories || [];
+                        if (isSelected) {
+                          return { ...prev, priceCategories: current.filter(c => c !== category) };
+                        } else {
+                          return { ...prev, priceCategories: [...current, category] };
+                        }
+                      });
+                    }}
+                    className={`px-4 py-2 text-sm rounded-lg transition-colors ${
+                      isSelected
+                        ? 'bg-green-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {labels[category]}
+                  </button>
+                );
+              })}
             </div>
           </div>
 

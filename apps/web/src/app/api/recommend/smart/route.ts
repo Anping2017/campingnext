@@ -166,10 +166,11 @@ ${Array.from(new Set(allCamps.map((c) => c.region))).join('、')}
       // 评分
       score += camp.rating * 4;
 
-      // 价格
-      if (camp.price === 0) score += 5;
-      else if (camp.price < 20) score += 3;
-      else if (camp.price < 40) score += 2;
+      // 价格（分类评分）
+      if (camp.price === 'free') score += 5;
+      else if (camp.price === 'cheap') score += 3;
+      else if (camp.price === 'medium') score += 2;
+      // expensive 不加分
 
       return { camp, score };
     });

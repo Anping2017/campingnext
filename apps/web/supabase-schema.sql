@@ -117,7 +117,7 @@ CREATE TABLE IF NOT EXISTS camps (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
   region TEXT NOT NULL,
-  price NUMERIC NOT NULL DEFAULT 0,
+  price TEXT NOT NULL CHECK (price IN ('free', 'cheap', 'medium', 'expensive')) DEFAULT 'medium', -- 价格分类：免费、便宜、中等、较贵
   tags TEXT[] DEFAULT '{}',
   lat NUMERIC NOT NULL,
   lng NUMERIC NOT NULL,
@@ -125,7 +125,17 @@ CREATE TABLE IF NOT EXISTS camps (
   facilities TEXT[] DEFAULT '{}',
   difficulty TEXT NOT NULL CHECK (difficulty IN ('easy', 'medium', 'hard')),
   rating NUMERIC NOT NULL DEFAULT 0 CHECK (rating >= 0 AND rating <= 5),
-  camp_type TEXT CHECK (camp_type IN ('DOC', 'Holiday Park', 'Freedom Camping')),
+  camp_type TEXT CHECK (camp_type IN ('DOC', 'Holiday Park', 'Freedom Camping', 'Local Camp', 'Private Campground')),
+  -- 联系方式
+  address TEXT, -- 详细地址
+  phone TEXT, -- 电话
+  email TEXT, -- 邮箱
+  website TEXT, -- 网址
+  -- 评价总结（从 Google Maps 评价中提取）
+  review_pros TEXT[], -- 优点列表
+  review_cons TEXT[], -- 缺点列表
+  -- 宠物政策
+  pet_policy TEXT CHECK (pet_policy IN ('allowed', 'not-allowed', 'seasonal', 'conditional')), -- 可宠、不可宠、淡季可宠、条件限制可宠
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -251,4 +261,109 @@ CREATE POLICY "Users can insert own post favorites"
 CREATE POLICY "Users can delete own post favorites"
   ON post_favorites FOR DELETE
   USING (auth.uid() = user_id);
+
+-- ============================================
+-- 管理员系统
+-- ============================================
+
+-- 管理员表（存储管理员信息）
+CREATE TABLE IF NOT EXISTS admins (
+  user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  email TEXT NOT NULL UNIQUE,
+  role TEXT NOT NULL DEFAULT 'admin' CHECK (role IN ('admin', 'super_admin')),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 创建索引
+CREATE INDEX IF NOT EXISTS idx_admins_email ON admins(email);
+
+-- 启用 RLS
+ALTER TABLE admins ENABLE ROW LEVEL SECURITY;
+
+-- 删除已存在的策略
+DROP POLICY IF EXISTS "Admins can view all admins" ON admins;
+DROP POLICY IF EXISTS "Admins can insert admins" ON admins;
+DROP POLICY IF EXISTS "Admins can update admins" ON admins;
+DROP POLICY IF EXISTS "Admins can delete admins" ON admins;
+
+-- 管理员策略：避免递归的策略设计
+-- 策略 1: 用户可以查看自己的记录（用于权限检查，不会导致递归）
+CREATE POLICY "Users can view own admin record"
+  ON admins FOR SELECT
+  USING (user_id = auth.uid());
+
+-- 注意：以下策略会导致递归，因为它们在检查时也需要查询 admins 表
+-- 如果需要管理员查看所有管理员，应该通过 API 使用 service_role key
+-- 或者使用 PostgreSQL 函数来避免递归
+
+-- 策略 2-4: 超级管理员可以管理其他管理员（首次创建需要临时禁用 RLS）
+-- 这些策略也会导致递归，所以首次创建管理员时需要使用 Table Editor 或临时禁用 RLS
+CREATE POLICY "Super admins can insert admins"
+  ON admins FOR INSERT
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM admins
+      WHERE user_id = auth.uid() AND role = 'super_admin'
+    )
+  );
+
+CREATE POLICY "Super admins can update admins"
+  ON admins FOR UPDATE
+  USING (
+    EXISTS (
+      SELECT 1 FROM admins
+      WHERE user_id = auth.uid() AND role = 'super_admin'
+    )
+  );
+
+CREATE POLICY "Super admins can delete admins"
+  ON admins FOR DELETE
+  USING (
+    EXISTS (
+      SELECT 1 FROM admins
+      WHERE user_id = auth.uid() AND role = 'super_admin'
+    )
+  );
+
+-- 管理员可以管理所有帖子（添加管理员策略）
+-- 注意：这个策略会导致递归，因为需要查询 admins 表
+-- 暂时注释掉，如果需要可以通过 API 使用 service_role key 来管理
+-- DROP POLICY IF EXISTS "Admins can manage all posts" ON posts;
+-- CREATE POLICY "Admins can manage all posts"
+--   ON posts FOR ALL
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM admins
+--       WHERE user_id = auth.uid()
+--     )
+--   )
+--   WITH CHECK (
+--     EXISTS (
+--       SELECT 1 FROM admins
+--       WHERE user_id = auth.uid()
+--     )
+--   );
+
+-- 管理员可以管理所有营地（添加管理员策略）
+-- 注意：这个策略会导致递归，因为需要查询 admins 表
+-- 暂时注释掉，如果需要可以通过 API 使用 service_role key 来管理
+-- DROP POLICY IF EXISTS "Admins can manage all camps" ON camps;
+-- CREATE POLICY "Admins can manage all camps"
+--   ON camps FOR ALL
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM admins
+--       WHERE user_id = auth.uid()
+--     )
+--   )
+--   WITH CHECK (
+--     EXISTS (
+--       SELECT 1 FROM admins
+--       WHERE user_id = auth.uid()
+--     )
+--   );
+
+-- 管理员可以查看所有用户数据（用于管理）
+-- 注意：这里不直接修改 user_preferences 等表的策略，而是通过 API 使用 service_role key
 

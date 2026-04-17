@@ -1,5 +1,8 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import { AuthProvider } from '@/contexts/AuthContext'
+import AuthBanner from '@/components/AuthBanner'
+import AuthSync from '@/components/AuthSync'
 
 export const metadata: Metadata = {
   title: 'Nomad NZ - 新西兰露营智能助手',
@@ -14,7 +17,11 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <body className="antialiased">
-        {children}
+        <AuthProvider>
+          <AuthSync />
+          <AuthBanner />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   )

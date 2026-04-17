@@ -3,9 +3,6 @@ import { OpenAI } from 'openai';
 import campsData from '@/data/camps.json';
 import type { Camp } from '@/types/camp';
 
-// 标记为动态路由，因为使用了 searchParams
-export const dynamic = 'force-dynamic';
-
 function getOpenAIClient() {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {

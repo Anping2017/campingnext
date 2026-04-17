@@ -139,3 +139,6 @@ const response = await fetch('/api/recommend/lightweight', {
 3. 距离计算使用 Haversine 公式（地球球面距离）
 
 
+
+
+

@@ -43,7 +43,7 @@ export default function PostCard({ post, onLike, onFavorite }: PostCardProps) {
   return (
     <Link href={`/community/${post.id}`} legacyBehavior>
       <a>
-        <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-6 cursor-pointer border border-gray-100">
+      <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-6 cursor-pointer border border-gray-100">
         {/* 用户信息 */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">

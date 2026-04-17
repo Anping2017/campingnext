@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Sparkles, Heart, Users, X } from 'lucide-react';
 
 export interface OnboardingData {
-  campTypes: string[]; // ['DOC', 'Holiday Park', 'Freedom Camping']
+  campTypes: string[]; // ['DOC', 'Holiday Park', 'Freedom Camping', 'Local Camp', 'Private Campground']
   people: number;
   completed: boolean;
 }
@@ -120,7 +120,7 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
               <p className="text-gray-600 text-sm">可以多选哦</p>
             </div>
             <div className="space-y-3">
-              {['DOC', 'Holiday Park', 'Freedom Camping'].map((type) => (
+              {['DOC', 'Holiday Park', 'Freedom Camping', 'Local Camp', 'Private Campground'].map((type) => (
                 <button
                   key={type}
                   onClick={() => toggleCampType(type)}

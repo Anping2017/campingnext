@@ -221,7 +221,7 @@ async function loadCampsData(): Promise<Camp[]> {
           id: camp.id,
           name: camp.name,
           region: camp.region,
-          price: parseFloat(camp.price),
+          price: camp.price as 'free' | 'cheap' | 'medium' | 'expensive',
           tags: camp.tags || [],
           lat: parseFloat(camp.lat),
           lng: parseFloat(camp.lng),
@@ -551,19 +551,19 @@ ${dailyPlan.drivingTime && dailyPlan.drivingTime !== '无需驾驶' ? `- 驾驶�
 
 注意：有些提醒可以没有具体时间，直接是message。只生成第${day}天的提醒。`;
 
-            const response = await openai.chat.completions.create({
-              model: 'gpt-4o-mini',
-              messages: [
-                { 
-                  role: 'system', 
+        const response = await openai.chat.completions.create({
+          model: 'gpt-4o-mini',
+          messages: [
+            { 
+              role: 'system', 
                   content: '你是新西兰户外露营专家和当地私导，用轻松、贴心的语气生成包含时间点的注意事项，让用户感觉你像熟悉当地的朋友。只生成指定当天的提醒，不要包含其他天的内容。' 
-                },
-                { role: 'user', content: notesPrompt },
-              ],
-              temperature: 0.8,
-            });
+            },
+            { role: 'user', content: notesPrompt },
+          ],
+          temperature: 0.8,
+        });
 
-            const result = safeParseJSON(response.choices[0].message.content || '{}');
+        const result = safeParseJSON(response.choices[0].message.content || '{}');
             dailyPlan.notes = result.notes || [];
           } catch (error) {
             console.error(`生成第${day}天注意事项失败:`, error);

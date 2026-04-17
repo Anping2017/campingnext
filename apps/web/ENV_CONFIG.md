@@ -19,6 +19,13 @@ OPENAI_API_KEY=your_openai_api_key_here
 # Supabase 配置（必需，用于登录功能）
 NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+# Google Maps API Key（可选，但推荐用于获取真实评分）
+# 获取方式：https://console.cloud.google.com/google/maps-apis
+# 需要启用 Places API 和 Places API (New)
+# 注意：使用 GOOGLE_MAPS_API_KEY（不带 NEXT_PUBLIC_ 前缀），因为只在服务器端使用
+# 如果不配置，评分将使用默认值 4.0；配置后，系统会自动从 Google Maps 获取真实评分
+GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here
 ```
 
 ## ⚠️ 常见问题

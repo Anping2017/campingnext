@@ -30,3 +30,6 @@ Write-Host "完成！现在可以运行 pnpm dev:mobile" -ForegroundColor Green
 
 
 
+
+
+

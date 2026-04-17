@@ -8,16 +8,23 @@ import MyTrips from '@/components/MyTrips';
 import PreferencesSettings from '@/components/PreferencesSettings';
 import ProfileInfo from '@/components/ProfileInfo';
 import NavBar from '@/components/NavBar';
-import { User } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useUserDataSync } from '@/hooks/useUserDataSync';
+import { User, LogOut } from 'lucide-react';
 import { Camp } from '@/types/camp';
 import { Post } from '@/types/post';
 import campsData from '@/data/camps.json';
 
-// 模拟数据
+// 模拟数据（注意：camps.json 中的价格是数字，需要转换）
 const mockFavoriteCamps: Camp[] = [
-  (campsData as Camp[]).find((c: Camp) => c.id === 'cathedral-cove') as Camp,
-  (campsData as Camp[]).find((c: Camp) => c.id === 'lake-tekapo') as Camp,
-].filter(Boolean);
+  (campsData as any[]).find((c: any) => c.id === 'cathedral-cove'),
+  (campsData as any[]).find((c: any) => c.id === 'lake-tekapo'),
+]
+  .filter(Boolean)
+  .map((c: any) => ({
+    ...c,
+    price: c.price === 0 ? 'free' : c.price <= 15 ? 'cheap' : c.price <= 30 ? 'medium' : 'expensive',
+  } as Camp));
 
 const mockMyPosts: Post[] = [
   {
@@ -61,10 +68,14 @@ interface TripPlan {
 }
 
 export default function ProfilePage() {
+  const { user, signOut } = useAuth();
   const [activeTab, setActiveTab] = useState('camps');
   const [favoriteCamps, setFavoriteCamps] = useState<Camp[]>([]);
   const [myPosts, setMyPosts] = useState<Post[]>([]);
   const [myTrips, setMyTrips] = useState<TripPlan[]>([]);
+
+  // 自动同步用户数据
+  useUserDataSync();
 
   // 加载行程数据
   const loadTrips = () => {
@@ -89,8 +100,15 @@ export default function ProfilePage() {
       try {
         const favoriteIds = JSON.parse(favorites);
         const camps = favoriteIds
-          .map((id: string) => (campsData as Camp[]).find((c: Camp) => c.id === id))
-
+          .map((id: string) => {
+            const camp = (campsData as any[]).find((c: any) => c.id === id);
+            if (!camp) return undefined;
+            // 转换价格从数字到分类
+            return {
+              ...camp,
+              price: camp.price === 0 ? 'free' : camp.price <= 15 ? 'cheap' : camp.price <= 30 ? 'medium' : 'expensive',
+            } as Camp;
+          })
           .filter((c: Camp | undefined): c is Camp => c !== undefined);
         setFavoriteCamps(camps);
       } catch (error) {
@@ -136,15 +154,32 @@ export default function ProfilePage() {
     }
   };
 
+  const handleSignOut = async () => {
+    await signOut();
+    window.location.reload();
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white pb-20">
       <div className="container mx-auto px-4 py-6 max-w-4xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
-            <User className="w-6 h-6 text-green-600" />
-            <h1 className="text-3xl font-bold text-gray-900">我的露营档案</h1>
+          <User className="w-6 h-6 text-green-600" />
+          <h1 className="text-3xl font-bold text-gray-900">我的露营档案</h1>
           </div>
+          {user && (
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-gray-600">{user.email}</span>
+              <button
+                onClick={handleSignOut}
+                className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                退出登录
+              </button>
+            </div>
+          )}
         </div>
 
         {/* 标签页 */}

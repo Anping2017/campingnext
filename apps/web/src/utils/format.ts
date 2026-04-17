@@ -1,9 +1,14 @@
 /**
- * 格式化价格
+ * 格式化价格分类
  */
-export function formatPrice(price: number): string {
-  if (price === 0) return '免费';
-  return `$${price}/晚`;
+export function formatPrice(price: 'free' | 'cheap' | 'medium' | 'expensive'): string {
+  const priceMap: Record<'free' | 'cheap' | 'medium' | 'expensive', string> = {
+    free: '免费',
+    cheap: '便宜',
+    medium: '中等',
+    expensive: '较贵',
+  };
+  return priceMap[price] || price;
 }
 
 /**
@@ -21,8 +26,12 @@ export function formatDifficulty(difficulty: string): string {
 /**
  * 格式化评分
  */
-export function formatRating(rating: number): string {
-  return rating.toFixed(1);
+export function formatRating(rating: number | string): string {
+  const numRating = typeof rating === 'string' ? parseFloat(rating) : rating;
+  if (isNaN(numRating)) {
+    return '0.0';
+  }
+  return numRating.toFixed(1);
 }
 
 /**
